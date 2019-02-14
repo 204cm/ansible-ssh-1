@@ -19,14 +19,16 @@ script:
   - wget -O ${PWD}/tests/test.sh https://gist.githubusercontent.com/geerlingguy/73ef1e5ee45d8694570f334be385e181/raw/
   - chmod +x ${PWD}/tests/test.sh
 
-  # fix missing "Missing privilege separation directory: /run/sshd"
-  - 'docker exec --tty ${container_id} env TERM=xterm mkdir -p /run/sshd'
-
   # Run tests.
   - ${PWD}/tests/test.sh
 
   # Check if ssh is available.
   - 'docker exec --tty ${container_id} env TERM=xterm sshd -T'
+
+after_failure:
+  # Check what happened on systemd systems.
+  - 'docker exec --tty ${container_id} env TERM=xterm systemctl -l status ssh.service'
+  - 'docker exec --tty ${container_id} env TERM=xterm journalctl -xe --no-pager'
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
