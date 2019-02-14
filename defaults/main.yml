@@ -22,6 +22,10 @@ ssh_server_hostkeys:
 # (dont use it, if you use jenkins with ssh connections)
 ssh_max_secure: yes
 
+# see https://www.ssh.com/ssh/keygen/
+# chose between: rsa, dsa, ecdsa and ed25519 as default for user
+ssh_key_algorithm: rsa
+
 # default settings for user, if keys are managned exclusive
 ssh_key_management_exclusive: yes
 

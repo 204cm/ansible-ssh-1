@@ -1,3 +1,6 @@
+- name: Set key algorithms
+  set_fact: key_algorithm="{{ user.algorithm if user.algorithms is defined else ssh_key_algorithm }}"
+
 - name: Set if managing_user or not
   set_fact: managing_user="{{ true if user.name == 'root' or ansible_user | default(ansible_env.USER) == user.name else false }}"
 
@@ -71,7 +74,7 @@
 
       - name: Install private keys - {{ user.name }}
         copy:
-          src: 'ssh/private_keys/{{ item.source_dir | default(item.dir) }}/{{ item.user | default(omit) }}_id_rsa'
+          src: 'ssh/private_keys/{{ item.source_dir | default(item.dir) }}/{{ item.user | default(omit) }}_id_{{ item.algorithm | default(key_algorithm) }}'
           dest: '{{ user_home }}/.ssh/{{ item.dir }}/'
           owner: '{{ user.name }}'
           mode: 0600
