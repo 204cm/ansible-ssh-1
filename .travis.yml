@@ -8,15 +8,7 @@ branches:
 
 env:
   - distro: debian9
-    version: latest
-    init: /lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-
   - distro: ubuntu1804
-    version: latest
-    init: /lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-
 
 script:
   # Configure test script so we can run extra tests after playbook is run.
@@ -29,7 +21,8 @@ script:
 
   # Run tests.
   - ${PWD}/tests/test.sh
-
+  # fix missing "Missing privilege separation directory: /run/sshd"
+  - 'docker exec --tty ${container_id} env TERM=xterm mkdir -p /run/sshd'
   # Check if ssh is available.
   - 'docker exec --tty ${container_id} env TERM=xterm sshd -T'
 
