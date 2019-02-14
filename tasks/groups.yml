@@ -1,0 +1,5 @@
+- name: Ensure user system groups exists
+  group:
+    state: present
+    name: '{{ item }}'
+  loop: '{{ ssh_groups }}'

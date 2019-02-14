@@ -1,0 +1,83 @@
+- name: Set if managing_user or not
+  set_fact: managing_user="{{ true if user.name == 'root' or ansible_user | default(ansible_env.USER) == user.name else false }}"
+
+- name: Reset user_access
+  set_fact: user_access=''
+
+# these account should be already exist
+- name: Manage user account for non-root and user!=ansible_user
+  block:
+    # password has to be encrypted, see
+    # https://docs.ansible.com/ansible/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
+    - name: Ensure user accounts for key exists - {{ user.name }}
+      user:
+        state: present
+        name: '{{ user.name }}'
+        password: "{{ user.password | default(lookup('password', '/tmp/credentials_user_{{ user.name }} encrypt=md5_crypt')) }}"
+        update_password: on_create
+        groups: '{{ user.groups | default(omit) }}'
+        home: '{{ user.home | default(omit) }}'
+        shell: "{{ user.shell | default('/bin/bash') }}"
+      when: user.active is undefined or user.active
+
+    - name: Disable user accounts - {{ user.name }}
+      user:
+        state: absent
+        remove: yes
+        name: '{{ user.name }}'
+      when: user.active is defined and not user.active
+
+  when: not managing_user
+
+- block:
+  - name: Set home directory - {{ user.name }}
+    set_fact: user_home="{{ '/root' if user.name == 'root' else lookup('env','HOME') }}"
+    when: managing_user
+
+  - name: Set home directory - {{ user.name }}
+    set_fact: user_home="{{ lookup('env','HOME') }}"
+    become: yes
+    become_user: '{{ user.name }}'
+    when: not managing_user
+
+  # if managing_user, default for with_management_access is true
+  - name: Set access for authorized_keys with management keys - {{ user.name }}
+    set_fact: user_access="{{ ssh_management_access + user.access | default([]) }}"
+    when: user.with_management_access | default(managing_user)
+
+  - name: Set access for authorized_keys without management keys - {{ user.name }}
+    set_fact: user_access="{{ user.access }}"
+    when: user_access == '' and user.access is defined
+
+  - name: Setup access with .ssh/authorized_keys  - {{ user.name }}
+    authorized_key:
+      user: '{{ user.name }}'
+      exclusive: '{{ user.ssh_key_management_exclusive | default(ssh_key_management_exclusive) }}'
+      key: |
+          {% for key in user_access %}
+          {{ lookup('file', 'ssh/access/' + key) }}
+          {% endfor %}
+      state: present
+    when: user_access != ''
+
+  - name: Manage private ssh keys and config file
+    block:
+      - name: Setup .ssh/config - {{ user.name }}
+        template:
+          src: .ssh/config
+          dest: '{{ user_home }}/.ssh/config'
+          owner: '{{ user.name }}'
+          mode: 0600
+
+      - name: Install private keys - {{ user.name }}
+        copy:
+          src: 'ssh/private_keys/{{ item.source_dir | default(item.dir) }}/{{ item.user | default(omit) }}_id_rsa'
+          dest: '{{ user_home }}/.ssh/{{ item.dir }}/'
+          owner: '{{ user.name }}'
+          mode: 0600
+        loop: '{{ user.private_keys }}'
+        when: item.dir is defined and item.user is defined
+
+    when: user.private_keys is defined and user.private_keys
+
+  when: user.active is undefined or user.active

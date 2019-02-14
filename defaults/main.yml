@@ -1,0 +1,44 @@
+# defaults file for ssh server and ssh key management
+---
+
+ssh_server_packages:
+  - openssh-server
+
+ssh_server_port: 22
+ssh_server_password_authentication: no
+ssh_server_permit_root_login: without-password
+ssh_server_recreate_host_keys: no
+
+# this set keys and macs to sshd. Do not use it, if old ssh clients should work
+# Jenkins uses an old library, which requires:
+# diffie-hellman-group14-sha1 and hmac-sha1 are required for jenkins connections
+# see https://issues.jenkins-ci.org/browse/JENKINS-33021
+# (dont use it, if you use jenkins with ssh connections)
+ssh_server_max_secure: yes
+
+# default settings for user, if keys are managned exclusive
+ssh_key_management_exclusive: yes
+
+# this system user groups will be created
+ssh_groups: []
+#  - develop
+
+# - a managed user (root or ansible_user) use with_management_access: true as default
+# - all other user use with_management_access: false as default
+# ssh_management_access are added to authorized_keys if with_management_access is true
+ssh_management_access: []
+
+ssh_users: []
+  # - name: root
+  #   access:
+  #     - company_user1.pub
+  #     - company_user2.pub
+  #   with_management_access: no
+  #   keys:
+  #     - host: github.com
+  #       user: git
+  #       dir: company1
+  #       source_dir: company1_company2
+  # - name: user3
+  #   access:
+  #     - company_user3.pub

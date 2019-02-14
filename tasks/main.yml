@@ -1,0 +1,14 @@
+- name: Import setup tasks
+  import_tasks: setup.yml
+  tags: ssh
+
+- name: Import group tasks
+  import_tasks: groups.yml
+  tags: ssh,keys
+
+- name: Import user tasks
+  include_tasks: user.yml
+  tags: ssh,keys
+  loop: "{{ ssh_users }}"
+  loop_control:
+    loop_var: user
