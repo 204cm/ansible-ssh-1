@@ -2,6 +2,7 @@
 
 Run ssh server and manage ssh keys
 
+[![Ansible Galaxy](https://img.shields.io/badge/galaxy-ssh-660198.svg)](https://galaxy.ansible.com/AlphaNodes/ssh)
 [![Build Status](https://travis-ci.org/AlphaNodes/ansible-ssh.svg?branch=master)](https://travis-ci.org/AlphaNodes/ansible-ssh)
 
 ## Dependencies
