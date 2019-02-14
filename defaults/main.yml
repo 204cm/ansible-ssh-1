@@ -6,15 +6,21 @@ ssh_server_packages:
 
 ssh_server_port: 22
 ssh_server_password_authentication: no
+ssh_server_use_pam: no
 ssh_server_permit_root_login: without-password
 ssh_server_recreate_host_keys: no
+
+ssh_server_hostkeys:
+  - /etc/ssh/ssh_host_ed25519_key
+  - /etc/ssh/ssh_host_rsa_key
+  - /etc/ssh/ssh_host_ecdsa_key
 
 # this set keys and macs to sshd. Do not use it, if old ssh clients should work
 # Jenkins uses an old library, which requires:
 # diffie-hellman-group14-sha1 and hmac-sha1 are required for jenkins connections
 # see https://issues.jenkins-ci.org/browse/JENKINS-33021
 # (dont use it, if you use jenkins with ssh connections)
-ssh_server_max_secure: yes
+ssh_max_secure: yes
 
 # default settings for user, if keys are managned exclusive
 ssh_key_management_exclusive: yes

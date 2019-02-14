@@ -1,9 +1,22 @@
 ---
 services: docker
+language: ruby
+
+branches:
+  only:
+    - master
 
 env:
   - distro: debian9
+    version: latest
+    init: /lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+
   - distro: ubuntu1804
+    version: latest
+    init: /lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+
 
 script:
   # Configure test script so we can run extra tests after playbook is run.
@@ -18,7 +31,7 @@ script:
   - ${PWD}/tests/test.sh
 
   # Check if ssh is available.
-  - 'docker exec --tty ${container_id} env TERM=xterm ssh -V'
+  - 'docker exec --tty ${container_id} env TERM=xterm sshd -T'
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/

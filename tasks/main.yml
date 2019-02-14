@@ -12,3 +12,8 @@
   loop: "{{ ssh_users }}"
   loop_control:
     loop_var: user
+
+- name: Import host_keys
+  include_tasks: host_keys.yml
+  tags: ssh
+  when: ssh_server_recreate_host_keys
