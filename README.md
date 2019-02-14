@@ -21,7 +21,7 @@ ansible-galaxy install alphanodes.ssh
 
 ## Example Playbook with just ssh server
 
-```ansible
+```yaml
 - hosts: localhost
   roles:
     - AlphaNodes.ssh
@@ -29,7 +29,7 @@ ansible-galaxy install alphanodes.ssh
 
 ## Example Playbook with key management
 
-```ansible
+```yaml
 - hosts: localhost
   vars:
     ssh_users
