@@ -3,6 +3,7 @@ dependencies: []
 
 galaxy_info:
   author: alexandermeindl
+  role_name: ssh
   description: ssh server with ssh key management
   company: AlphaNodes GmbH
   license: GPL Version 3
