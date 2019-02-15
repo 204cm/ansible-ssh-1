@@ -32,7 +32,12 @@ ansible-galaxy install alphanodes.ssh
 ```yaml
 - hosts: localhost
   vars:
-    ssh_users
+    # ssh-keyscan -t ed25519 HOST
+    # used for all users as default
+    ssh_known_hosts:
+      - name: myhost.com
+        key: 'myhost.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1TMULuqiGtbwkbbPccedorx7jqlrDyRCHg3978a7iy'
+    ssh_users:
       - name: root
         access:
           - company_user1.pub

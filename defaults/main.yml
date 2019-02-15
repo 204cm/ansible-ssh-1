@@ -29,6 +29,10 @@ ssh_key_algorithm: rsa
 # default settings for user, if keys are managned exclusive
 ssh_key_management_exclusive: yes
 
+# see https://www.ssh.com/ssh/config/
+# see https://security.stackexchange.com/questions/56268/ssh-benefits-of-using-hashed-known-hosts
+ssh_client_hash_known_hosts: yes
+
 # this system user groups will be created
 ssh_groups: []
 #  - develop
@@ -39,3 +43,7 @@ ssh_groups: []
 ssh_management_access: []
 
 ssh_users: []
+
+ssh_all_known_hosts: []
+
+ssh_known_hosts: []

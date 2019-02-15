@@ -1,11 +1,14 @@
 - name: Set key algorithms
-  set_fact: key_algorithm="{{ user.algorithm if user.algorithms is defined else ssh_key_algorithm }}"
+  set_fact: key_algorithm="{{ user.algorithm if user.algorithm is defined else ssh_key_algorithm }}"
 
 - name: Set if managing_user or not
   set_fact: managing_user="{{ true if user.name == 'root' or ansible_user | default(ansible_env.USER) == user.name else false }}"
 
 - name: Reset user_access
   set_fact: user_access=''
+
+- name: Set known keys
+  set_fact: known_keys="{{ user.known_keys if user.known_keys is defined else ssh_known_hosts }}"
 
 # these account should be already exist
 - name: Manage user account for non-root and user!=ansible_user
@@ -33,15 +36,23 @@
   when: not managing_user
 
 - block:
-  - name: Set home directory - {{ user.name }}
-    set_fact: user_home="{{ '/root' if user.name == 'root' else lookup('env','HOME') }}"
-    when: managing_user
+  - name: Set home directory (root)- {{ user.name }}
+    set_fact: user_home='/root'
+    when: user.name == 'root'
 
-  - name: Set home directory - {{ user.name }}
-    set_fact: user_home="{{ lookup('env','HOME') }}"
-    become: yes
-    become_user: '{{ user.name }}'
-    when: not managing_user
+  - name: Get user information for non-root - {{ user.name }}
+    user:
+      name: '{{ user.name }}'
+      state: present
+    register: user_infos
+    when: user.name != 'root'
+
+  - name: Set home directory for non-root - {{ user.name }}
+    set_fact: user_home="{{ user_infos.home }}"
+    when: user.name != 'root'
+
+  - name: Set user group - {{ user.name }}
+    set_fact: user_group="{{ 'root' if user.name == 'root' else user_infos.group }}"
 
   # if managing_user, default for with_management_access is true
   - name: Set access for authorized_keys with management keys - {{ user.name }}
@@ -63,13 +74,49 @@
       state: present
     when: user_access != ''
 
+  - name: Setup .ssh/known_hosts only (if provided) - {{ user.name }}
+    known_hosts:
+      key: '{{ item.key }}'
+      name: '{{ item.host }}'
+      hash_host: '{{ ssh_client_hash_known_hosts }}'
+    loop: '{{ known_keys }}'
+    register: known_hosts_rc
+    when: managing_user and item.host is defined and item.key is defined
+
+  - name: Setup .ssh/known_hosts only (all) - {{ user.name }}
+    known_hosts:
+      path: '{{ user_home }}/.ssh/known_hosts'
+      key: '{{ item.key }}'
+      name: '{{ item.host }}'
+      hash_host: '{{ ssh_client_hash_known_hosts }}'
+    loop: '{{ ssh_all_known_hosts }}'
+    register: known_hosts_rc
+    when: >
+      item.host is defined
+      and item.key is defined
+      and (user.skip_ssh_all_known_hosts is undefined or not user.skip_ssh_all_known_hosts)
+
+  - name: Check if .ssh/known_hosts exists - {{ user.name }}
+    stat:
+      path: '{{ user_home }}/.ssh/known_hosts'
+    register: known_hosts_result
+
+  - name: Check permission of .ssh/known_hosts - {{ user.name }}
+    file:
+      path: '{{ user_home }}/.ssh/known_hosts'
+      owner: '{{ user.name }}'
+      group: '{{ user_group }}'
+      mode: 0600
+    when: user.name != 'root' and known_hosts_result.stat.exists
+
   - name: Manage private ssh keys and config file
     block:
-      - name: Setup .ssh/config - {{ user.name }}
+      - name: Setup .ssh/config - {{ user.name }} - home {{ user_home }}
         template:
           src: .ssh/config
           dest: '{{ user_home }}/.ssh/config'
           owner: '{{ user.name }}'
+          group: '{{ user_group }}'
           mode: 0600
 
       - name: Install private keys - {{ user.name }}
@@ -77,6 +124,7 @@
           src: 'ssh/private_keys/{{ item.source_dir | default(item.dir) }}/{{ item.user | default(omit) }}_id_{{ item.algorithm | default(key_algorithm) }}'
           dest: '{{ user_home }}/.ssh/{{ item.dir }}/'
           owner: '{{ user.name }}'
+          group: '{{ user_group }}'
           mode: 0600
         loop: '{{ user.private_keys }}'
         when: item.dir is defined and item.user is defined

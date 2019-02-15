@@ -13,7 +13,7 @@
   loop_control:
     loop_var: user
 
-- name: Import host_keys
+- name: Import host key tasks
   include_tasks: host_keys.yml
   tags: ssh
   when: ssh_server_recreate_host_keys
