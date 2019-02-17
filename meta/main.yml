@@ -2,9 +2,9 @@
 dependencies: []
 
 galaxy_info:
-  author: alexandermeindl
   role_name: ssh
-  description: ssh server with ssh key management
+  description: ssh server with ssh key management (private keys, authorized_keys) and use based known_hosts support
+  author: alexandermeindl
   company: AlphaNodes GmbH
   license: GPL Version 3
   min_ansible_version: 2.5
@@ -18,4 +18,6 @@ galaxy_info:
   galaxy_tags:
     - ssh
     - keys
+    - publickey
     - security
+    - users
