@@ -33,17 +33,12 @@ ssh_key_management_exclusive: yes
 # see https://security.stackexchange.com/questions/56268/ssh-benefits-of-using-hashed-known-hosts
 ssh_client_hash_known_hosts: yes
 
-# this system user groups will be created
 ssh_groups: []
-#  - develop
-
-# - a managed user (root or ansible_user) use with_management_access: true as default
-# - all other user use with_management_access: false as default
-# ssh_management_access are added to authorized_keys if with_management_access is true
-ssh_management_access: []
 
 ssh_users: []
 
-ssh_all_known_hosts: []
+ssh_management_access: []
 
 ssh_known_hosts: []
+
+ssh_all_known_hosts: []
