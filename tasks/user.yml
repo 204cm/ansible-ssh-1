@@ -4,6 +4,9 @@
 - name: Set if managing_user or not
   set_fact: managing_user="{{ true if user.name == 'root' or ansible_user | default(ansible_env.USER) == user.name else false }}"
 
+- name: Set/Reset user_home
+  set_fact: user_home="{{ user.home if user.home is defined else '' }}"
+
 - name: Reset user_access
   set_fact: user_access=''
 
@@ -19,10 +22,10 @@
       user:
         state: present
         name: '{{ user.name }}'
-        password: "{{ user.password | default(lookup('password', '/tmp/credentials_user_{{ user.name }} encrypt=md5_crypt')) }}"
+        password: "{{ user.password | default(lookup('password', '/dev/null encrypt=md5_crypt')) }}"
         update_password: on_create
         groups: '{{ user.groups | default(omit) }}'
-        home: '{{ user.home | default(omit) }}'
+        home: '{{ user_home | default(omit) }}'
         shell: "{{ user.shell | default('/bin/bash') }}"
       when: user.active is undefined or user.active
 
@@ -36,13 +39,17 @@
   when: not managing_user
 
 - block:
-  - name: Set home directory (root)- {{ user.name }}
+  - name: Set home directory (root) - {{ user.name }}
     set_fact: user_home='/root'
     when: user.name == 'root'
 
+  # Update should never be updated here because user already exists,
+  # but we have to specify it because otherwise ansible user reset password to empty string
   - name: Get user information for non-root - {{ user.name }}
     user:
       name: '{{ user.name }}'
+      password: "{{ user.password | default(lookup('password', '/dev/null encrypt=md5_crypt')) }}"
+      update_password: on_create
       state: present
     register: user_infos
     when: user.name != 'root'
