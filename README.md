@@ -1,6 +1,6 @@
 # Ansible Role: ssh server
 
-Run ssh server and manage ssh keys
+Run ssh server and manage ssh keys (private keys), authorized_keys and known_hosts files of users.
 
 [![Ansible Galaxy](https://img.shields.io/badge/galaxy-alphanodes.ssh-660198.svg)](https://galaxy.ansible.com/AlphaNodes/ssh)
 [![Build Status](https://travis-ci.org/AlphaNodes/ansible-ssh.svg?branch=master)](https://travis-ci.org/AlphaNodes/ansible-ssh)
@@ -137,7 +137,7 @@ List of known_hosts, which should be added to `known_hosts` file of all users. U
 ssh_all_known_hosts: []
 ```
 
-Same as `ssh_known_hosts`, but you **cannot** overwrite it use based with `known_hosts`.
+Same as `ssh_known_hosts`, but you **cannot** overwrite it user based with `known_hosts`.
 
 
 ## Example Playbook with just ssh server
