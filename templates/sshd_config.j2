@@ -49,7 +49,7 @@ PermitEmptyPasswords no
 
 # Change to yes to enable challenge-response passwords (beware issues with
 # some PAM modules and threads)
-ChallengeResponseAuthentication no
+ChallengeResponseAuthentication {{ 'yes' if ssh_server_challenge_response_authentication else 'no' }}
 
 # Change to no to disable tunnelled clear text passwords
 PasswordAuthentication {{ 'yes' if ssh_server_password_authentication else 'no' }}
@@ -64,7 +64,8 @@ PasswordAuthentication {{ 'yes' if ssh_server_password_authentication else 'no' 
 #GSSAPIAuthentication no
 #GSSAPICleanupCredentials yes
 
-X11Forwarding {{ 'yes' if ssh_server_x11_forwarding else 'no' }}
+# Disable X11 forwarding, since local X11 display could be accessed through forwarded connection.
+X11Forwarding no
 X11DisplayOffset 10
 PrintMotd no
 PrintLastLog yes
@@ -90,3 +91,23 @@ Subsystem sftp /usr/lib/openssh/sftp-server -f AUTHPRIV -l INFO
 # PAM authentication, then enable this but set PasswordAuthentication
 # and ChallengeResponseAuthentication to 'no'.
 UsePAM {{ 'yes' if ssh_server_use_pam else 'no' }}
+
+{% if ssh_server_match_group %}
+# Group matching configuration
+# ============================
+
+{% for item in ssh_server_match_group %}
+Match Group {{ item.group }}
+    {{ item.rules | indent(4) }}
+{% endfor %}
+{% endif %}
+
+{% if ssh_server_match_user %}
+# User matching configuration
+# ===========================
+
+{% for item in ssh_server_match_user %}
+Match User {{ item.user }}
+    {{ item.rules | indent(4) }}
+{% endfor %}
+{% endif %}

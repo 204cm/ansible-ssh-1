@@ -44,9 +44,15 @@ ssh_server_password_authentication: no
 
 Whether to accept passwords for authentication.
 
+```
+ssh_server_challenge_response_authentication: no
+```
+
+Whether challenge-response passwords should be used or not.
+
 
 ```
-ssh_server_use_pam: yes
+ssh_server_use_pam: no
 ```
 
 Whether PAM authentication should be used or not.
@@ -75,6 +81,19 @@ ssh_server_hostkeys:
 ```
 
 Available host keys for ssh server.
+
+
+```
+ssh_server_match_group: []
+```
+
+Introduces a conditional block.  If all of the criteria on the Match line are satisfied, the keywords on the following lines override those set in the global section of the config
+
+```
+ssh_server_match_user: []
+```
+
+Introduces a conditional block.  If all of the criteria on the Match line are satisfied, the keywords on the following lines override those set in the global section of the config file, until either another Match line or the end of the file.
 
 
 ```
