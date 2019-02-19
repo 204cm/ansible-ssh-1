@@ -64,7 +64,7 @@ PasswordAuthentication {{ 'yes' if ssh_server_password_authentication else 'no' 
 #GSSAPIAuthentication no
 #GSSAPICleanupCredentials yes
 
-X11Forwarding no
+X11Forwarding {{ 'yes' if ssh_server_x11_forwarding else 'no' }}
 X11DisplayOffset 10
 PrintMotd no
 PrintLastLog yes

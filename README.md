@@ -46,7 +46,7 @@ Whether to accept passwords for authentication.
 
 
 ```
-ssh_server_use_pam: no
+ssh_server_use_pam: yes
 ```
 
 Whether PAM authentication should be used or not.
