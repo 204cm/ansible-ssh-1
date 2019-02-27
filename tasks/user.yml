@@ -25,7 +25,7 @@
         password: "{{ user.password | default(lookup('password', '/dev/null encrypt=md5_crypt')) }}"
         update_password: on_create
         groups: '{{ user.groups | default(omit) }}'
-        home: '{{ user_home | default(omit) }}'
+        home: '{{ user.home | default(omit) }}'
         shell: "{{ user.shell | default('/bin/bash') }}"
       when: user.active is undefined or user.active
 
