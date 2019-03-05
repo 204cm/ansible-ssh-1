@@ -19,6 +19,11 @@
     validate: 'sshd -T -f %s'
   notify: restart ssh
 
+- name: Remove sshd_config.ucf-dist, if available
+  file:
+    path: /etc/ssh/sshd_config.ucf-dist
+    state: absent
+
 - name: Update ssh client configuration
   template:
     src: ssh_config.j2
