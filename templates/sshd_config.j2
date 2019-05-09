@@ -64,6 +64,9 @@ PasswordAuthentication {{ 'yes' if ssh_server_password_authentication else 'no' 
 #GSSAPIAuthentication no
 #GSSAPICleanupCredentials yes
 
+AllowTcpForwarding {{ 'yes' if ssh_server_allow_tcp_forwarding else 'no' }}
+AllowStreamLocalForwarding {{ 'yes' if ssh_server_allow_stream_local_forwarding else 'no' }}
+
 # Disable X11 forwarding, since local X11 display could be accessed through forwarded connection.
 X11Forwarding no
 X11DisplayOffset 10
