@@ -3,6 +3,12 @@
     name: '{{ ssh_server_packages }}'
     state: present
 
+- name: Start ssh service
+  service:
+    name: ssh
+    state: started
+    enabled: yes
+
 - name: Update ssh server configuration
   template:
     src: sshd_config.j2
@@ -25,9 +31,3 @@
     owner: root
     group: root
     mode: 0644
-
-- name: Start ssh service
-  service:
-    name: ssh
-    state: started
-    enabled: yes
