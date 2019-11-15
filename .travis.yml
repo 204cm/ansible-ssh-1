@@ -8,6 +8,7 @@ branches:
 
 env:
   - distro: debian9
+  - distro: debian10
   - distro: ubuntu1804
 
 script:
