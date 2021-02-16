@@ -125,6 +125,7 @@
           owner: '{{ user.name }}'
           group: '{{ user_group }}'
           mode: 0600
+        when: user.skip_config is undefined or not user.skip_config
 
       - name: Install private keys - {{ user.name }}
         copy:
@@ -134,7 +135,17 @@
           group: '{{ user_group }}'
           mode: 0600
         loop: '{{ user.private_keys }}'
-        when: item.dir is defined and item.user is defined
+        when: item.dir is defined and item.user is defined and (item.default_key is undefined or not item.default_key)
+
+      - name: Install default private keys - {{ user.name }}
+        copy:
+          src: 'ssh/private_keys/{{ item.source_dir | default(item.dir) }}/{{ item.user | default(user.name) }}_id_{{ item.algorithm | default(key_algorithm) }}'
+          dest: '{{ user_home }}/.ssh/id_{{ item.algorithm | default(key_algorithm) }}'
+          owner: '{{ user.name }}'
+          group: '{{ user_group }}'
+          mode: 0600
+        loop: '{{ user.private_keys }}'
+        when: item.dir is defined and item.default_key is defined and item.default_key
 
     when: user.private_keys is defined and user.private_keys
 
