@@ -1,3 +1,5 @@
+---
+
 - name: Be sure ssh is installed
   apt:
     name: '{{ ssh_server_packages }}'
@@ -7,7 +9,7 @@
   service:
     name: ssh
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Update ssh server configuration
   template:

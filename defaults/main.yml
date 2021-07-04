@@ -5,15 +5,15 @@ ssh_server_packages:
   - openssh-server
 
 ssh_server_port: 22
-ssh_server_password_authentication: no
-ssh_server_challenge_response_authentication: no
-ssh_server_use_pam: yes
+ssh_server_password_authentication: false
+ssh_server_challenge_response_authentication: false
+ssh_server_use_pam: true
 
-ssh_server_allow_tcp_forwarding: no
-ssh_server_allow_stream_local_forwarding: no
+ssh_server_allow_tcp_forwarding: false
+ssh_server_allow_stream_local_forwarding: false
 
 ssh_server_permit_root_login: without-password
-ssh_server_recreate_host_keys: no
+ssh_server_recreate_host_keys: false
 
 ssh_server_hostkeys:
   - /etc/ssh/ssh_host_ed25519_key
@@ -28,25 +28,21 @@ ssh_server_match_user: false
 # diffie-hellman-group14-sha1 and hmac-sha1 are required for jenkins connections
 # see https://issues.jenkins-ci.org/browse/JENKINS-33021
 # (dont use it, if you use jenkins with ssh connections)
-ssh_max_secure: yes
+ssh_max_secure: true
 
 # see https://www.ssh.com/ssh/keygen/
 # chose between: rsa, dsa, ecdsa and ed25519 as default for user
 ssh_key_algorithm: rsa
 
 # default settings for user, if keys are managned exclusive
-ssh_key_management_exclusive: yes
+ssh_key_management_exclusive: true
 
 # see https://www.ssh.com/ssh/config/
 # see https://security.stackexchange.com/questions/56268/ssh-benefits-of-using-hashed-known-hosts
-ssh_client_hash_known_hosts: yes
+ssh_client_hash_known_hosts: true
 
 ssh_groups: []
-
 ssh_users: []
-
 ssh_management_access: []
-
 ssh_known_hosts: []
-
 ssh_all_known_hosts: []

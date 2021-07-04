@@ -1,7 +1,9 @@
+---
+
 - name: Recreate host keys - collect old host keys
   shell: ls /etc/ssh/ssh_host_*
   register: ssh_host_keys
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Recreate host keys - delete old keys
   file:
@@ -34,7 +36,7 @@
 - name: Collect new host entries for known_hosts file
   shell: "ssh-keyscan -t ed25519,rsa {{ inventory_hostname }},`dig +short {{ inventory_hostname }}`"
   register: ssh_known_host_results
-  ignore_errors: yes
+  ignore_errors: true
   delegate_to: localhost
 
 - name: Add new host key to known_hosts file

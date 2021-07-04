@@ -1,3 +1,5 @@
+---
+
 - name: Set key algorithms
   set_fact: key_algorithm="{{ user.algorithm if user.algorithm is defined else ssh_key_algorithm }}"
 
@@ -27,126 +29,131 @@
         groups: '{{ user.groups | default(omit) }}'
         home: '{{ user.home | default(omit) }}'
         shell: "{{ user.shell | default('/bin/bash') }}"
+      no_log: true
       when: user.active is undefined or user.active
 
     - name: Disable user accounts - {{ user.name }}
       user:
         state: absent
-        remove: yes
+        remove: true
         name: '{{ user.name }}'
       when: user.active is defined and not user.active
 
   when: not managing_user
 
-- block:
-  - name: Set home directory (root) - {{ user.name }}
-    set_fact: user_home='/root'
-    when: user.name == 'root'
+- name: Active user tasks
+  block:
+    - name: Set home directory (root) - {{ user.name }}
+      set_fact: user_home='/root'
+      when: user.name == 'root'
 
-  # Update should never be updated here because user already exists,
-  # but we have to specify it because otherwise ansible user reset password to empty string
-  - name: Get user information for non-root - {{ user.name }}
-    user:
-      name: '{{ user.name }}'
-      password: "{{ user.password | default(lookup('password', '/dev/null encrypt=md5_crypt')) }}"
-      update_password: on_create
-      state: present
-    register: user_infos
-    when: user.name != 'root'
+    # Update should never be updated here because user already exists,
+    # but we have to specify it because otherwise ansible user reset password to empty string
+    - name: Get user information for non-root - {{ user.name }}
+      user:
+        name: '{{ user.name }}'
+        password: "{{ user.password | default(lookup('password', '/dev/null encrypt=md5_crypt')) }}"
+        update_password: on_create
+        state: present
+      register: user_infos
+      no_log: true
+      when: user.name != 'root'
 
-  - name: Set home directory for non-root - {{ user.name }}
-    set_fact: user_home="{{ user_infos.home }}"
-    when: user.name != 'root'
+    - name: Set home directory for non-root - {{ user.name }}
+      set_fact: user_home="{{ user_infos.home }}"
+      when: user.name != 'root'
 
-  - name: Set user group - {{ user.name }}
-    set_fact: user_group="{{ 'root' if user.name == 'root' else user_infos.group }}"
+    - name: Set user group - {{ user.name }}
+      set_fact: user_group="{{ 'root' if user.name == 'root' else user_infos.group }}"
 
-  # if managing_user, default for with_management_access is true
-  - name: Set access for authorized_keys with management keys - {{ user.name }}
-    set_fact: user_access="{{ ssh_management_access + user.access | default([]) }}"
-    when: user.with_management_access | default(managing_user)
+    # if managing_user, default for with_management_access is true
+    - name: Set access for authorized_keys with management keys - {{ user.name }}
+      set_fact: user_access="{{ ssh_management_access + user.access | default([]) }}"
+      when: user.with_management_access | default(managing_user)
 
-  - name: Set access for authorized_keys without management keys - {{ user.name }}
-    set_fact: user_access="{{ user.access }}"
-    when: user_access == '' and user.access is defined
+    - name: Set access for authorized_keys without management keys - {{ user.name }}
+      set_fact: user_access="{{ user.access }}"
+      when: user_access == '' and user.access is defined
 
-  - name: Setup access with .ssh/authorized_keys  - {{ user.name }}
-    authorized_key:
-      user: '{{ user.name }}'
-      exclusive: '{{ user.ssh_key_management_exclusive | default(ssh_key_management_exclusive) }}'
-      key: |
-          {% for key in user_access %}
-          {{ lookup('file', 'ssh/access/' + key) }}
-          {% endfor %}
-      state: present
-    when: user_access != ''
+    - name: Setup access with .ssh/authorized_keys  - {{ user.name }}
+      authorized_key:
+        user: '{{ user.name }}'
+        exclusive: '{{ user.ssh_key_management_exclusive | default(ssh_key_management_exclusive) }}'
+        key: |
+            {% for key in user_access %}
+            {{ lookup('file', 'ssh/access/' + key) }}
+            {% endfor %}
+        state: present
+      when: user_access != ''
 
-  - name: Setup .ssh/known_hosts only (if provided) - {{ user.name }}
-    known_hosts:
-      key: '{{ item.key }}'
-      name: '{{ item.host }}'
-      hash_host: '{{ ssh_client_hash_known_hosts }}'
-    loop: '{{ known_keys }}'
-    register: known_hosts_rc
-    when: managing_user and item.host is defined and item.key is defined
+    - name: Setup .ssh/known_hosts only (if provided) - {{ user.name }}
+      known_hosts:
+        key: '{{ item.key }}'
+        name: '{{ item.host }}'
+        hash_host: '{{ ssh_client_hash_known_hosts }}'
+      loop: '{{ known_keys }}'
+      register: known_hosts_rc
+      when: managing_user and item.host is defined and item.key is defined
 
-  - name: Setup .ssh/known_hosts only (all) - {{ user.name }}
-    known_hosts:
-      path: '{{ user_home }}/.ssh/known_hosts'
-      key: '{{ item.key }}'
-      name: '{{ item.host }}'
-      hash_host: '{{ ssh_client_hash_known_hosts }}'
-    loop: '{{ ssh_all_known_hosts }}'
-    register: known_hosts_rc
-    when: >
-      item.host is defined
-      and item.key is defined
-      and (user.skip_ssh_all_known_hosts is undefined or not user.skip_ssh_all_known_hosts)
+    - name: Setup .ssh/known_hosts only (all) - {{ user.name }}
+      known_hosts:
+        path: '{{ user_home }}/.ssh/known_hosts'
+        key: '{{ item.key }}'
+        name: '{{ item.host }}'
+        hash_host: '{{ ssh_client_hash_known_hosts }}'
+      loop: '{{ ssh_all_known_hosts }}'
+      register: known_hosts_rc
+      when: >
+        item.host is defined
+        and item.key is defined
+        and (user.skip_ssh_all_known_hosts is undefined or not user.skip_ssh_all_known_hosts)
 
-  - name: Check if .ssh/known_hosts exists - {{ user.name }}
-    stat:
-      path: '{{ user_home }}/.ssh/known_hosts'
-    register: known_hosts_result
+    - name: Check if .ssh/known_hosts exists - {{ user.name }}
+      stat:
+        path: '{{ user_home }}/.ssh/known_hosts'
+      register: known_hosts_result
 
-  - name: Check permission of .ssh/known_hosts - {{ user.name }}
-    file:
-      path: '{{ user_home }}/.ssh/known_hosts'
-      owner: '{{ user.name }}'
-      group: '{{ user_group }}'
-      mode: 0600
-    when: user.name != 'root' and known_hosts_result.stat.exists
+    - name: Check permission of .ssh/known_hosts - {{ user.name }}
+      file:
+        path: '{{ user_home }}/.ssh/known_hosts'
+        owner: '{{ user.name }}'
+        group: '{{ user_group }}'
+        mode: 0600
+      when: user.name != 'root' and known_hosts_result.stat.exists
 
-  - name: Manage private ssh keys and config file
-    block:
-      - name: Setup .ssh/config - {{ user.name }} - home {{ user_home }}
-        template:
-          src: .ssh/config
-          dest: '{{ user_home }}/.ssh/config'
-          owner: '{{ user.name }}'
-          group: '{{ user_group }}'
-          mode: 0600
-        when: user.skip_config is undefined or not user.skip_config
+    - name: Manage private ssh keys and config file
+      block:
+        - name: Setup .ssh/config - {{ user.name }} - home {{ user_home }}
+          template:
+            src: .ssh/config
+            dest: '{{ user_home }}/.ssh/config'
+            owner: '{{ user.name }}'
+            group: '{{ user_group }}'
+            mode: 0600
+          when: user.skip_config is undefined or not user.skip_config
 
-      - name: Install private keys - {{ user.name }}
-        copy:
-          src: 'ssh/private_keys/{{ item.source_dir | default(item.dir) }}/{{ item.user | default(omit) }}_id_{{ item.algorithm | default(key_algorithm) }}'
-          dest: '{{ user_home }}/.ssh/{{ item.dir }}/'
-          owner: '{{ user.name }}'
-          group: '{{ user_group }}'
-          mode: 0600
-        loop: '{{ user.private_keys }}'
-        when: item.dir is defined and item.user is defined and (item.default_key is undefined or not item.default_key)
+        - name: Install private keys - {{ user.name }}
+          copy:
+            src: 'ssh/private_keys/{{ item.source_dir | default(item.dir) }}/{{ item.user | default(omit) }}_id_{{ item.algorithm | default(key_algorithm) }}'
+            dest: '{{ user_home }}/.ssh/{{ item.dir }}/'
+            owner: '{{ user.name }}'
+            group: '{{ user_group }}'
+            mode: 0600
+          loop: '{{ user.private_keys }}'
+          when: item.dir is defined and item.user is defined and (item.default_key is undefined or not item.default_key)
 
-      - name: Install default private keys - {{ user.name }}
-        copy:
-          src: 'ssh/private_keys/{{ item.source_dir | default(item.dir) }}/{{ item.user | default(user.name) }}_id_{{ item.algorithm | default(key_algorithm) }}'
-          dest: '{{ user_home }}/.ssh/id_{{ item.algorithm | default(key_algorithm) }}'
-          owner: '{{ user.name }}'
-          group: '{{ user_group }}'
-          mode: 0600
-        loop: '{{ user.private_keys }}'
-        when: item.dir is defined and item.default_key is defined and item.default_key
+        - name: Install default private keys - {{ user.name }}
+          copy:
+            src: |
+              ssh/private_keys/
+              {{ item.source_dir | default(item.dir) }}/{{ item.user | default(user.name) }}_id_{{ item.algorithm | default(key_algorithm) }}
+            dest: '{{ user_home }}/.ssh/id_{{ item.algorithm | default(key_algorithm) }}'
+            owner: '{{ user.name }}'
+            group: '{{ user_group }}'
+            mode: 0600
+          loop: '{{ user.private_keys }}'
+          when: item.dir is defined and item.default_key is defined and item.default_key
 
-    when: user.private_keys is defined and user.private_keys
+      when: user.private_keys is defined and user.private_keys
 
   when: user.active is undefined or user.active

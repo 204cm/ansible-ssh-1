@@ -13,7 +13,6 @@ defaults:
     working-directory: 'AlphaNodes.ssh'
 
 jobs:
-
   lint:
     name: Lint
     runs-on: ubuntu-latest

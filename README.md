@@ -2,9 +2,7 @@
 
 Run ssh server and manage ssh keys (private keys), authorized_keys and known_hosts files of users.
 
-[![Ansible Galaxy](https://img.shields.io/badge/galaxy-alphanodes.ssh-660198.svg)](https://galaxy.ansible.com/AlphaNodes/ssh)
-
-[![CI](https://github.com/AlphaNodes/ansible-ssh/workflows/CI/badge.svg?event=push)](https://github.com/AlphaNodes/ansible-ssh/actions/workflows/ci.yml)
+[![Ansible Galaxy](https://img.shields.io/badge/galaxy-alphanodes.ssh-660198.svg)](https://galaxy.ansible.com/AlphaNodes/ssh) [![CI](https://github.com/AlphaNodes/ansible-ssh/workflows/CI/badge.svg?event=push)](https://github.com/AlphaNodes/ansible-ssh/actions/workflows/ci.yml)
 
 ## Dependencies
 
