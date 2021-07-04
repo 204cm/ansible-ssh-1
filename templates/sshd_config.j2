@@ -97,22 +97,22 @@ Subsystem sftp /usr/lib/openssh/sftp-server -f AUTHPRIV -l INFO
 # and ChallengeResponseAuthentication to 'no'.
 UsePAM {{ 'yes' if ssh_server_use_pam else 'no' }}
 
-{% if ssh_server_match_group %}
-# Group matching configuration
-# ============================
-
-{% for item in ssh_server_match_group %}
-Match Group {{ item.group }}
-    {{ item.rules | indent(4) }}
-{% endfor %}
-{% endif %}
-
 {% if ssh_server_match_user %}
 # User matching configuration
 # ===========================
 
 {% for item in ssh_server_match_user %}
 Match User {{ item.user }}
+    {{ item.rules | indent(4) }}
+{% endfor %}
+{% endif %}
+
+{% if ssh_server_match_group %}
+# Group matching configuration
+# ============================
+
+{% for item in ssh_server_match_group %}
+Match Group {{ item.group }}
     {{ item.rules | indent(4) }}
 {% endfor %}
 {% endif %}

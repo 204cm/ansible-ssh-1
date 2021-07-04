@@ -1,0 +1,29 @@
+---
+- name: Converge
+  hosts: all
+
+  vars:
+    ssh_server_port: 2222
+
+  pre_tasks:
+    - name: Update apt cache.
+      apt: update_cache=yes cache_valid_time=600
+      when: ansible_os_family == 'Debian'
+      changed_when: false
+
+    - name: Ensure build dependencies are installed.
+      apt:
+        name:
+          - openssh-server
+          - openssh-client
+          - openssh-sftp-server
+        state: present
+      when: ansible_os_family == 'Debian'
+
+  post_tasks:
+    - name: Test ssh configuration
+      command: sshd -T
+      changed_when: false
+
+  roles:
+    - role: AlphaNodes.ssh
