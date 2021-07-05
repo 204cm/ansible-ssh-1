@@ -30,6 +30,10 @@ ssh_server_match_user: false
 # (dont use it, if you use jenkins with ssh connections)
 ssh_max_secure: true
 
+# Specifies  the  maximum  number  of authentication attempts permitted per connection.
+# Once the number of failures reaches half this value, additional failures are logged.
+ssh_max_auth_retries: 2
+
 # see https://www.ssh.com/ssh/keygen/
 # chose between: rsa, dsa, ecdsa and ed25519 as default for user
 ssh_key_algorithm: rsa
@@ -41,10 +45,12 @@ ssh_key_management_exclusive: true
 # see https://security.stackexchange.com/questions/56268/ssh-benefits-of-using-hashed-known-hosts
 ssh_client_hash_known_hosts: true
 
-# true to enable sftp configuration
-ssh_server_sftp_enabled: false
+# true to enable sftp configuration (required for ansible sftp usage)
+ssh_server_sftp_enabled: true
 ssh_server_sftp_umask: '0027'
 ssh_server_sftp_chroot_dir: /home/%u
+# original debian subsystem for sftp:
+# ssh_server_subsystem_sftp: /usr/lib/openssh/sftp-server -f AUTHPRIV -l INFO
 ssh_server_subsystem_sftp: internal-sftp -l INFO -f LOCAL6 -u {{ ssh_server_sftp_umask }}
 
 # e.g.
