@@ -41,7 +41,19 @@ ssh_key_management_exclusive: true
 # see https://security.stackexchange.com/questions/56268/ssh-benefits-of-using-hashed-known-hosts
 ssh_client_hash_known_hosts: true
 
+# true to enable sftp configuration
+ssh_server_sftp_enabled: false
+ssh_server_sftp_umask: '0027'
+ssh_server_sftp_chroot_dir: /home/%u
+ssh_server_subsystem_sftp: internal-sftp -l INFO -f LOCAL6 -u {{ ssh_server_sftp_umask }}
+
+# e.g.
+# ssh_groups:
+#   - name: foo
+#     system: false
+#
 ssh_groups: []
+
 ssh_users: []
 ssh_management_access: []
 ssh_known_hosts: []

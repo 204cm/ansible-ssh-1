@@ -2,20 +2,26 @@
 
 - name: Import setup tasks
   import_tasks: setup.yml
-  tags: ssh
+  tags:
+    - ssh
 
 - name: Import group tasks
   import_tasks: groups.yml
-  tags: ssh,keys
+  tags:
+    - ssh
+    - keys
 
 - name: Import user tasks
   include_tasks: user.yml
-  tags: ssh,keys
   loop: "{{ ssh_users }}"
   loop_control:
     loop_var: user
+  tags:
+    - ssh
+    - keys
 
 - name: Import host key tasks
   include_tasks: host_keys.yml
-  tags: ssh
   when: ssh_server_recreate_host_keys
+  tags:
+    - ssh

@@ -2,6 +2,7 @@
 
 - name: Ensure user system groups exists
   group:
-    state: present
-    name: '{{ item }}'
+    name: '{{ item.name }}'
+    system: "{{ item.system | default('false') }}"
+    state: "{{ item.state | default('present') }}"
   loop: '{{ ssh_groups }}'

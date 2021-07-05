@@ -18,7 +18,7 @@
     owner: root
     group: root
     mode: 0600
-    validate: 'sshd -T -f %s'
+    validate: 'sshd -T -f %s -C user=root'
   notify: restart ssh
 
 - name: Remove sshd_config.ucf-dist, if available

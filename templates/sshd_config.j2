@@ -83,9 +83,6 @@ TCPKeepAlive yes
 # Allow client to pass locale environment variables
 AcceptEnv LANG LC_*
 
-# Log sftp level file access (read/write/etc.) that would not be easily logged otherwise.
-Subsystem sftp /usr/lib/openssh/sftp-server -f AUTHPRIV -l INFO
-
 # Set this to 'yes' to enable PAM authentication, account processing,
 # and session processing. If this is enabled, PAM authentication will
 # be allowed through the ChallengeResponseAuthentication and
@@ -96,21 +93,22 @@ Subsystem sftp /usr/lib/openssh/sftp-server -f AUTHPRIV -l INFO
 # PAM authentication, then enable this but set PasswordAuthentication
 # and ChallengeResponseAuthentication to 'no'.
 UsePAM {{ 'yes' if ssh_server_use_pam else 'no' }}
+{% if ssh_server_sftp_enabled %}
 
+# Log sftp level file access (read/write/etc.) that would not be easily logged otherwise.
+Subsystem sftp {{ ssh_server_subsystem_sftp }}
+{% endif %}
 {% if ssh_server_match_user %}
-# User matching configuration
-# ===========================
 
+# User matching configuration
 {% for item in ssh_server_match_user %}
 Match User {{ item.user }}
     {{ item.rules | indent(4) }}
 {% endfor %}
 {% endif %}
-
 {% if ssh_server_match_group %}
-# Group matching configuration
-# ============================
 
+# Group matching configuration
 {% for item in ssh_server_match_group %}
 Match Group {{ item.group }}
     {{ item.rules | indent(4) }}

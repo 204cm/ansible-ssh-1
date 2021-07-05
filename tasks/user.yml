@@ -29,7 +29,8 @@
         groups: '{{ user.groups | default(omit) }}'
         home: '{{ user.home | default(omit) }}'
         shell: "{{ user.shell | default('/bin/bash') }}"
-      no_log: true
+        comment: '{{ user.comment | default(omit) }}'
+      no_log: false
       when: user.active is undefined or user.active
 
     - name: Disable user accounts - {{ user.name }}
@@ -144,9 +145,7 @@
 
         - name: Install default private keys - {{ user.name }}
           copy:
-            src: |
-              ssh/private_keys/
-              {{ item.source_dir | default(item.dir) }}/{{ item.user | default(user.name) }}_id_{{ item.algorithm | default(key_algorithm) }}
+            src: "ssh/private_keys/{{ item.source_dir | default(item.dir) }}/{{ item.user | default(user.name) }}_id_{{ item.algorithm | default(key_algorithm) }}"
             dest: '{{ user_home }}/.ssh/id_{{ item.algorithm | default(key_algorithm) }}'
             owner: '{{ user.name }}'
             group: '{{ user_group }}'
