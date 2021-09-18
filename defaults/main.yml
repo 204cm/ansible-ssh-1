@@ -53,6 +53,9 @@ ssh_server_sftp_chroot_dir: /home/%u
 # ssh_server_subsystem_sftp: /usr/lib/openssh/sftp-server -f AUTHPRIV -l INFO
 ssh_server_subsystem_sftp: internal-sftp -l INFO -f LOCAL6 -u {{ ssh_server_sftp_umask }}
 
+ssh_deny_users: ''
+ssh_deny_groups: ''
+
 # e.g.
 # ssh_groups:
 #   - name: foo
