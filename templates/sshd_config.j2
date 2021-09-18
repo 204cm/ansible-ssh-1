@@ -36,11 +36,9 @@ LoginGraceTime 120
 PermitRootLogin {{ ssh_server_permit_root_login }}
 {% if ssh_deny_users != '' %}
 DenyUsers {{ ssh_deny_users }}
-
 {% endif %}
 {% if ssh_deny_groups != '' %}
 DenyGroups {{ ssh_deny_groups }}
-
 {% endif %}
 StrictModes yes
 
