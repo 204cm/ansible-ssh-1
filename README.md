@@ -36,19 +36,19 @@ ssh_server_port: 22
 The port on which sshd will listen for requests.
 
 ```yaml
-ssh_server_password_authentication: no
+ssh_server_password_authentication: false
 ```
 
 Whether to accept passwords for authentication.
 
 ```yaml
-ssh_server_challenge_response_authentication: no
+ssh_server_challenge_response_authentication: false
 ```
 
 Whether challenge-response passwords should be used or not.
 
 ```yaml
-ssh_server_use_pam: yes
+ssh_server_use_pam: true
 ```
 
 Whether PAM authentication should be used or not.
@@ -60,7 +60,7 @@ ssh_server_permit_root_login: without-password
 Should root login be allowed? Possible values are: without-password, 'yes' or 'no'
 
 ```yaml
-ssh_server_recreate_host_keys: no
+ssh_server_recreate_host_keys: false
 ```
 
 `ssh_server_recreate_host_keys` to yes will recreate host keys. Most likely you to not want to set it to
@@ -88,7 +88,7 @@ ssh_server_match_user: []
 Introduces a conditional block.  If all of the criteria on the Match line are satisfied, the keywords on the following lines override those set in the global section of the config file, until either another Match line or the end of the file.
 
 ```yaml
-ssh_max_secure: yes
+ssh_max_secure: true
 ```
 
 if `ssh_max_secure` is yes, `KexAlgorithms`, `Ciphers` and `MACs` are set for ssh server. If set to no, these
@@ -101,13 +101,13 @@ ssh_key_algorithm: rsa
 `ssh_key_algorithm` is used as default algorithm for ssh user keys (file name: id_ + `ssh_key_algorithm`). Choose between: rsa, dsa, ecdsa and ed25519. See https://www.ssh.com/ssh/keygen/ for more information.
 
 ```yaml
-ssh_key_management_exclusive: yes
+ssh_key_management_exclusive: true
 ```
 
 Default settings for user, if keys are managned exclusive
 
 ```yaml
-ssh_client_hash_known_hosts: yes
+ssh_client_hash_known_hosts: true
 ```
 
 ssh client configuration whether to use hashes for hostnames in known_hosts file or not. See https://www.ssh.com/ssh/config/ and https://security.stackexchange.com/questions/56268/ssh-benefits-of-using-hashed-known-hosts for more information.
@@ -165,7 +165,7 @@ Same as `ssh_known_hosts`, but you **cannot** overwrite it user based with `know
         access:
           - company_user1.pub
           - company_user2.pub
-        with_management_access: no
+        with_management_access: false
         private_keys:
           - host: github.com
             user: git
