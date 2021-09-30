@@ -15,8 +15,8 @@ galaxy_info:
         - focal
     - name: Debian
       versions:
-        - stretch
         - buster
+        - bullseye
   galaxy_tags:
     - ssh
     - sftp
