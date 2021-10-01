@@ -21,10 +21,13 @@
     validate: 'sshd -T -f %s -C user=root'
   notify: restart ssh
 
-- name: Remove sshd_config.ucf-dist, if available
+- name: Remove debian dist files, if available
   file:
-    path: /etc/ssh/sshd_config.ucf-dist
+    path: /etc/ssh/{{ item }}
     state: absent
+  loop:
+    - sshd_config.ucf-dist
+    - ssh_config.dpkg-dist
 
 - name: Update ssh client configuration
   template:
