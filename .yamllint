@@ -2,9 +2,8 @@
 extends: default
 
 rules:
-  line-length:
-    max: 180
-    level: warning
-
-ignore: |
-  .github/stale.yml
+  line-length: disable
+  new-lines: {type: unix}
+  braces: {max-spaces-inside: 1, level: error}
+  brackets: {max-spaces-inside: 1, level: error}
+  comments-indentation: disable
