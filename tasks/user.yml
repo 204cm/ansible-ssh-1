@@ -1,19 +1,24 @@
 ---
 
 - name: Set key algorithms
-  set_fact: key_algorithm="{{ user.algorithm if user.algorithm is defined else ssh_key_algorithm }}"
+  set_fact:
+    key_algorithm: "{{ user.algorithm if user.algorithm is defined else ssh_key_algorithm }}"
 
 - name: Set if managing_user or not
-  set_fact: managing_user="{{ true if user.name == 'root' or ansible_user | default(ansible_env.USER) == user.name else false }}"
+  set_fact:
+    managing_user: "{{ true if user.name == 'root' or ansible_user | default(ansible_env.USER) == user.name else false }}"
 
 - name: Set/Reset user_home
-  set_fact: user_home="{{ user.home if user.home is defined else '' }}"
+  set_fact:
+    user_home: "{{ user.home if user.home is defined else '' }}"
 
 - name: Reset user_access
-  set_fact: user_access=''
+  set_fact:
+    user_access: ''
 
 - name: Set known keys
-  set_fact: known_keys="{{ user.known_keys if user.known_keys is defined else ssh_known_hosts }}"
+  set_fact:
+    known_keys: "{{ user.known_keys if user.known_keys is defined else ssh_known_hosts }}"
 
 # these account should be already exist
 - name: Manage user account for non-root and user!=ansible_user
