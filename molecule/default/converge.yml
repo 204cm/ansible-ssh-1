@@ -12,7 +12,7 @@
       changed_when: false
 
   roles:
-    - role: AlphaNodes.ssh
+    - role: alphanodes.ssh
 
   post_tasks:
     - name: Test ssh configuration
