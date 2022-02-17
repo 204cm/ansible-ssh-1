@@ -14,7 +14,7 @@ Run ssh server and manage ssh keys (private keys), authorized_keys and known_hos
 
 Using ansible galaxy cli:
 
-```bash
+```shell
 ansible-galaxy install alphanodes.ssh
 ```
 
@@ -148,7 +148,7 @@ Same as `ssh_known_hosts`, but you **cannot** overwrite it user based with `know
 ```yaml
 - hosts: localhost
   roles:
-    - AlphaNodes.ssh
+    - alphanodes.ssh
 ```
 
 ## Example Playbook with key management
@@ -178,7 +178,7 @@ Same as `ssh_known_hosts`, but you **cannot** overwrite it user based with `know
           - name: myhost1.com
             key: 'myhost1.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1TMULuqiGtbwkbbPccedorx7jqlrDyRCHg3978a7iy'
   roles:
-    - AlphaNodes.ssh
+    - alphanodes.ssh
 ```
 
 ## License

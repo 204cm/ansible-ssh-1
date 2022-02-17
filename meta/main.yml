@@ -3,6 +3,7 @@ dependencies: []
 
 galaxy_info:
   role_name: ssh
+  namespace: alphanodes
   description: ssh server with ssh key management (private keys, authorized_keys) and use based known_hosts support
   author: alexandermeindl
   company: AlphaNodes GmbH
