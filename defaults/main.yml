@@ -30,9 +30,9 @@ ssh_server_match_user: false
 # (dont use it, if you use jenkins with ssh connections)
 ssh_max_secure: true
 
-# Specifies  the  maximum  number  of authentication attempts permitted per connection.
+# Specifies the maximum number of authentication attempts permitted per connection.
 # Once the number of failures reaches half this value, additional failures are logged.
-ssh_max_auth_retries: 2
+ssh_max_auth_retries: 4
 
 # see https://www.ssh.com/ssh/keygen/
 # chose between: rsa, dsa, ecdsa and ed25519 as default for user
