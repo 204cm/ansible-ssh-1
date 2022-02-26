@@ -45,6 +45,22 @@ ssh_key_management_exclusive: true
 # see https://security.stackexchange.com/questions/56268/ssh-benefits-of-using-hashed-known-hosts
 ssh_client_hash_known_hosts: true
 
+# Specifies the host key algorithms that the server offers (sshd)
+ssh_host_key_algorithms: []         # sshd
+
+# Specifies the host key algorithms order the client will try (ssh)
+ssh_client_host_key_algorithms:
+  - ssh-ed25519-cert-v01@openssh.com
+  - ssh-rsa-cert-v01@openssh.com
+  - ssh-ed25519
+  - ssh-rsa
+  - ecdsa-sha2-nistp521-cert-v01@openssh.com
+  - ecdsa-sha2-nistp384-cert-v01@openssh.com
+  - ecdsa-sha2-nistp256-cert-v01@openssh.com
+  - ecdsa-sha2-nistp521
+  - ecdsa-sha2-nistp384
+  - ecdsa-sha2-nistp256
+
 # true to enable sftp configuration (required for ansible sftp usage)
 ssh_server_sftp_enabled: true
 ssh_server_sftp_umask: '0027'

@@ -17,9 +17,12 @@ HostKey {{key}}
 # and https://infosec.mozilla.org/guidelines/openssh#modern-openssh-67
 # check https://tls.imirhil.fr/ssh
 
-KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
-MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
+# Host key algorithms that the server offers.
+{{ "HostKeyAlgorithms " ~ ssh_host_key_algorithms|join(',') if ssh_host_key_algorithms else "HostKeyAlgorithms"|comment }}
+
+{{ 'Ciphers ' ~ ssh_ciphers|join(',') }}
+{{ 'MACs ' ~ ssh_macs|join(',') }}
+{{ 'KexAlgorithms ' ~ ssh_kex|join(',') }}
 
 {% endif %}
 
