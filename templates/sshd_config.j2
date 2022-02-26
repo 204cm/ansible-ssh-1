@@ -62,7 +62,7 @@ PermitEmptyPasswords no
 ChallengeResponseAuthentication {{ 'yes' if ssh_server_challenge_response_authentication else 'no' }}
 
 # Change to no to disable tunnelled clear text passwords
-PasswordAuthentication {{ 'yes' if ssh_server_password_authentication else 'no' }}
+PasswordAuthentication {{ 'yes' if ssh_server_password_authentication | bool else 'no' }}
 
 # Kerberos options
 #KerberosAuthentication no
@@ -74,8 +74,8 @@ PasswordAuthentication {{ 'yes' if ssh_server_password_authentication else 'no' 
 #GSSAPIAuthentication no
 #GSSAPICleanupCredentials yes
 
-AllowTcpForwarding {{ 'yes' if ssh_server_allow_tcp_forwarding else 'no' }}
-AllowStreamLocalForwarding {{ 'yes' if ssh_server_allow_stream_local_forwarding else 'no' }}
+AllowTcpForwarding {{ 'yes' if ssh_server_allow_tcp_forwarding | bool else 'no' }}
+AllowStreamLocalForwarding {{ 'yes' if ssh_server_allow_stream_local_forwarding | bool else 'no' }}
 
 # Disable X11 forwarding, since local X11 display could be accessed through forwarded connection.
 X11Forwarding no
@@ -94,7 +94,7 @@ AcceptEnv LANG LC_*
 # If you just want the PAM account and session checks to run without
 # PAM authentication, then enable this but set PasswordAuthentication
 # and ChallengeResponseAuthentication to 'no'.
-UsePAM {{ 'yes' if ssh_server_use_pam else 'no' }}
+UsePAM {{ 'yes' if ssh_server_use_pam | bool else 'no' }}
 {% if ssh_server_sftp_enabled %}
 
 # Log sftp level file access (read/write/etc.) that would not be easily logged otherwise.

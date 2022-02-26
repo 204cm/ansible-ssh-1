@@ -19,7 +19,7 @@
 
 Host *
     SendEnv LANG LC_*
-    HashKnownHosts {{ 'yes' if ssh_client_hash_known_hosts else 'no' }}
+    HashKnownHosts {{ 'yes' if ssh_client_hash_known_hosts | bool else 'no' }}
     GSSAPIAuthentication yes
     {% if ssh_max_secure %}
     # see https://infosec.mozilla.org/guidelines/openssh#modern
