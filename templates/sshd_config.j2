@@ -23,7 +23,6 @@ HostKey {{key}}
 {{ 'Ciphers ' ~ ssh_ciphers|join(',') }}
 {{ 'MACs ' ~ ssh_macs|join(',') }}
 {{ 'KexAlgorithms ' ~ ssh_kex|join(',') }}
-
 {% endif %}
 
 # Logging
