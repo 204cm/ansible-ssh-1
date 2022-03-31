@@ -1,5 +1,9 @@
 {{ ansible_managed | comment }}
 
+{% if ssh_server_include_sshd_config_d %}
+Include /etc/ssh/sshd_config.d/*.conf
+
+{% endif %}
 # What ports, IPs and protocols we listen for
 Port {{ ssh_server_port }}
 # Use these options to restrict which interfaces/protocols sshd will bind to

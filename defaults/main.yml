@@ -4,6 +4,8 @@
 ssh_server_packages:
   - openssh-server
 
+ssh_server_include_sshd_config_d: false
+
 ssh_server_port: 22
 ssh_server_password_authentication: false
 ssh_server_challenge_response_authentication: false

@@ -30,6 +30,12 @@ ssh_server_packages:
 Debian packages, which should be installed.
 
 ```yaml
+ssh_server_include_sshd_config_d: false
+```
+
+If true, /etc/ssh/sshd_config.d/*.conf is included and allows overwrite settings.
+
+```yaml
 ssh_server_port: 22
 ```
 
